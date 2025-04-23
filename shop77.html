@@ -1,0 +1,110 @@
+ <div id="cart">
+        <button class="close-btn" onclick="closeCart()">X</button>
+        <h2>Your Cart</h2>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="coupon">
+            <h3>Apply Coupon</h3>
+            <input type="text" id="couponCode" placeholder="Enter code">
+            <button onclick="applyCoupon()">Apply</button>
+            <p id="couponMessage" style="color: green;"></p>
+        </div>
+        <div class="cart-total" id="cartTotal">Total: M0</div>
+        <button class="checkout-btn">Proceed to Checkout</button>
+    </div>
+
+    <script>
+        let cart = [];
+        function addToCart(product, price) {
+            const existingItem = cart.find(item => item.product === product);
+            if (existingItem) {
+                // You might want to handle quantity updates here
+                console.log('Item already in cart');
+            } else {
+                cart.push({ product, price, quantity: 1 });
+            }
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartTotalElement = document.getElementById('cartTotal');
+
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const cartItem = document.createElement('div');
+                cartItem.classList.add('cart-item');
+                cartItem.innerHTML = `<span>${item.product} (${item.quantity})</span><span>M${item.price}</span>`;
+                cartItemsContainer.appendChild(cartItem);
+                total += item.price * item.quantity;
+            });
+
+            cartTotalElement.textContent = `Total: M${total.toFixed(2)}`;
+        }
+
+        function closeCart() {
+            document.getElementById('cart').classList.remove('show');
+        }
+
+        function applyCoupon() {
+            const couponCode = document.getElementById('couponCode').value.trim().toUpperCase();
+            const couponMessageElement = document.getElementById('couponMessage');
+            let total = parseFloat(document.getElementById('cartTotal').textContent.replace('Total: M', ''));
+
+            // **Replace this with your actual coupon logic**
+            if (couponCode === 'SCENTLUXE10') {
+                const discount = total * 0.10;
+                total -= discount;
+                document.getElementById('cartTotal').textContent = `Total: M${total.toFixed(2)}`;
+                couponMessageElement.textContent = 'Coupon applied! 10% off.';
+                couponMessageElement.style.color = 'green';
+            } else if (couponCode) {
+                couponMessageElement.textContent = 'Invalid coupon code.';
+                couponMessageElement.style.color = 'red';
+            } else {
+                couponMessageElement.textContent = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartButton = document.createElement('button');
+            cartButton.textContent = 'View Cart';
+            cartButton.style.position = 'fixed';
+            cartButton.style.top = '20px';
+            cartButton.style.right = '20px';
+            cartButton.style.padding = '10px 15px';
+            cartButton.style.backgroundColor = '#e6d1bf';
+            cartButton.style.border = 'none';
+            cartButton.style.borderRadius = '30px';
+            cartButton.style.cursor = 'pointer';
+            cartButton.style.fontFamily = "'Playfair Display', serif";
+            cartButton.onclick = () => document.getElementById('cart').classList.add('show');
+            document.body.appendChild(cartButton);
+
+            // Add more product listings (at least 6 more to reach 10)
+            const productsSection = document.querySelector('.products');
+            const additionalProducts = [
+                { name: "Aroma Sample Set", image: "placeholder_samples.jpg", price: 150 },
+                { name: "Luxe Car Diffuser", image: "placeholder_car.jpg", price: 800 },
+                { name: "Scented Candles Trio", image: "placeholder_candles.jpg", price: 900 },
+                { name: "Reed Diffuser Set", image: "placeholder_reed.jpg", price: 700 },
+                { name: "Essential Oil Blend", image: "placeholder_oil.jpg", price: 350 },
+                { name: "Room Spray Collection", image: "placeholder_spray.jpg", price: 600 },
+            ];
+
+            additionalProducts.forEach(prod => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
+                productCard.innerHTML = `
+                    <img src="${prod.image}" alt="${prod.name}">
+                    <h3>${prod.name}</h3>
+                    <p>Price: M${prod.price}</p>
+                    <button onclick="addToCart('${prod.name}', ${prod.price})">Add to Cart</button>
+                `;
+                productsSection.appendChild(productCard);
+            });
+        });
+    </script>
+</body>
+</html>
